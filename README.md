@@ -744,3 +744,9 @@ wallet.balance == saldo reconstruído pelo ledger
 ### Diferenciais opcionais
 
 Teste de carga também conta como diferencial. Se fizer, exponha como `bun run test:load` e registre ambiente, metodologia, throughput, p50/p95/p99, taxa de erro, conflitos de concorrência e outbox lag. Não há meta de RPS — a qualidade do experimento e a honestidade da análise pesam mais que o número bruto.
+
+---
+
+## Implementação local — setup e avaliação
+
+A especificação oficial acima foi preservada integralmente. Consulte [instruções de execução](docs/SETUP.md), [arquitetura](ARCHITECTURE.md), [resultados dos testes](docs/TEST_RESULTS.md) e [status da implementação](IMPLEMENTATION_STATUS.md). A cópia fiel do README anterior à implementação está em [docs/CHALLENGE_ORIGINAL.md](docs/CHALLENGE_ORIGINAL.md).

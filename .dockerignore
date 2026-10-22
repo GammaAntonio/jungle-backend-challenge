@@ -1,0 +1,7 @@
+node_modules
+.git
+.env
+*.log
+.env.*
+docs/.restart-fixture.json
+docs/audit/

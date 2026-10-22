@@ -1,0 +1,43 @@
+services:
+  init:
+    build: .
+    command: ["sh", "-c", "bun scripts/provision-db.ts && bun run init:sqs"]
+    environment:
+      ADMIN_DATABASE_URL: postgres://jungle:jungle_dev@postgres:5432/jungle
+      DATABASE_URL: postgres://jungle_runtime:jungle_runtime_dev@postgres:5432/jungle
+      SQS_ENDPOINT: http://localstack:4566
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+  api:
+    build: .
+    environment: &app-env
+      DATABASE_URL: postgres://jungle_runtime:jungle_runtime_dev@postgres:5432/jungle
+      SQS_ENDPOINT: http://localstack:4566
+    ports: ["127.0.0.1::3000"]
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bun",
+          "-e",
+          "if(!(await fetch('http://localhost:3000/health/ready')).ok)process.exit(1)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  worker:
+    build: .
+    command: ["bun", "src/worker.ts"]
+    environment:
+      <<: *app-env
+      METRICS_HOST: 0.0.0.0
+    ports: ["127.0.0.1::3001"]
+    depends_on:
+      init:
+        condition: service_completed_successfully

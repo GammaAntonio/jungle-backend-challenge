@@ -1,0 +1,2 @@
+ALTER TABLE ledger DROP CONSTRAINT ledger_transaction_wallet_fk;
+ALTER TABLE wager_transaction DROP CONSTRAINT wager_transaction_id_wallet_unique;

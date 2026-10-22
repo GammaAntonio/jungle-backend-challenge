@@ -1,0 +1,101 @@
+[
+  {
+    "eventId": "5a85de31-4334-4e4a-90ee-156d4527469c",
+    "eventType": "WagerTransactionProcessed",
+    "version": 1,
+    "aggregateId": "00000000-0000-4000-8000-000000000001",
+    "correlationId": "legacy-correlation",
+    "causationId": "legacy-message",
+    "occurredAt": "2026-10-21T17:55:07.462Z",
+    "data": {
+      "transactionId": "00000000-0000-4000-8000-000000000002",
+      "kind": "OPENING",
+      "balance": {
+        "amount": "25.00",
+        "currency": "BRL"
+      }
+    }
+  },
+  {
+    "eventId": "0058bd7c-2817-439c-878a-c74ae7ba5cf1",
+    "eventType": "WagerTransactionProcessed",
+    "version": 1,
+    "aggregateId": "00000000-0000-4000-8000-000000000001",
+    "correlationId": "legacy-correlation",
+    "causationId": "legacy-message",
+    "occurredAt": "2026-10-21T17:55:07.462Z",
+    "data": {
+      "transactionId": "00000000-0000-4000-8000-000000000002",
+      "kind": "LOSS",
+      "status": "PROCESSED",
+      "balance": {
+        "amount": "25.00",
+        "currency": "BRL"
+      }
+    }
+  },
+  {
+    "eventId": "2438f649-afbf-4d0b-8150-5eb906ab6379",
+    "eventType": "WagerTransactionRejected",
+    "version": 1,
+    "aggregateId": "00000000-0000-4000-8000-000000000001",
+    "correlationId": "legacy-correlation",
+    "causationId": "legacy-message",
+    "occurredAt": "2026-10-21T17:55:07.462Z",
+    "data": {
+      "transactionId": "00000000-0000-4000-8000-000000000002",
+      "kind": "BET",
+      "status": "REJECTED",
+      "balance": {
+        "amount": "25.00",
+        "currency": "BRL"
+      },
+      "failureCode": "INSUFFICIENT_FUNDS"
+    }
+  },
+  {
+    "eventId": "cd4bf356-8517-4b97-a014-32fc2e80e5b7",
+    "eventType": "WagerTransactionPendingReference",
+    "version": 1,
+    "aggregateId": "00000000-0000-4000-8000-000000000001",
+    "correlationId": "legacy-correlation",
+    "causationId": "legacy-message",
+    "occurredAt": "2026-10-21T17:55:07.462Z",
+    "data": {
+      "transactionId": "00000000-0000-4000-8000-000000000002",
+      "kind": "REFUND",
+      "status": "PENDING_REFERENCE",
+      "balance": {
+        "amount": "25.00",
+        "currency": "BRL"
+      }
+    }
+  },
+  {
+    "eventId": "6a7b808b-a532-4562-952b-0702e9728733",
+    "eventType": "WalletBalanceChanged",
+    "version": 1,
+    "aggregateId": "00000000-0000-4000-8000-000000000001",
+    "correlationId": "legacy-correlation",
+    "causationId": "legacy-message",
+    "occurredAt": "2026-10-21T17:55:07.462Z",
+    "data": {
+      "walletId": "00000000-0000-4000-8000-000000000001",
+      "transactionId": "00000000-0000-4000-8000-000000000002",
+      "direction": "CREDIT",
+      "money": {
+        "amount": "25.00",
+        "currency": "BRL"
+      },
+      "balanceBefore": {
+        "amount": "0.00",
+        "currency": "BRL"
+      },
+      "balanceAfter": {
+        "amount": "25.00",
+        "currency": "BRL"
+      },
+      "walletVersion": 1
+    }
+  }
+]

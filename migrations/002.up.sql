@@ -1,0 +1,1 @@
+﻿CREATE TRIGGER ledger_no_truncate BEFORE TRUNCATE ON ledger FOR EACH STATEMENT EXECUTE FUNCTION immutable_record();

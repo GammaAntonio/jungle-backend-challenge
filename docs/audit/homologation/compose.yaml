@@ -1,0 +1,107 @@
+x-application-environment: &application-environment
+  DATABASE_URL: postgres://${HOMOLOGATION_RUNTIME_USER}:${HOMOLOGATION_RUNTIME_PASSWORD}@postgres:5432/${HOMOLOGATION_DATABASE}
+  DB_SCHEMA: public
+  SQS_ENDPOINT: http://localstack:4566
+  SQS_QUEUE_PREFIX: ${SQS_QUEUE_PREFIX}
+  AWS_REGION: ${AWS_REGION}
+  AWS_ACCESS_KEY_ID: test
+  AWS_SECRET_ACCESS_KEY: test
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${HOMOLOGATION_ADMIN_USER}
+      POSTGRES_PASSWORD: ${HOMOLOGATION_ADMIN_PASSWORD}
+      POSTGRES_DB: ${HOMOLOGATION_DATABASE}
+    ports:
+      - "127.0.0.1::5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  localstack:
+    image: localstack/localstack:4.6
+    environment:
+      SERVICES: sqs
+      AWS_DEFAULT_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      PERSISTENCE: "1"
+      SNAPSHOT_SAVE_STRATEGY: ON_REQUEST
+      SNAPSHOT_LOAD_STRATEGY: ON_STARTUP
+      DEBUG: "0"
+    ports:
+      - "127.0.0.1::4566"
+    volumes:
+      - localstack-data:/var/lib/localstack
+    healthcheck:
+      test: ["CMD", "awslocal", "sqs", "list-queues"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  init:
+    build:
+      context: ../../..
+      dockerfile: Dockerfile
+    image: jungle-homologation-app:${HOMOLOGATION_ID}
+    command: ["sh", "-c", "bun scripts/provision-db.ts && bun run init:sqs"]
+    environment:
+      <<: *application-environment
+      ADMIN_DATABASE_URL: postgres://${HOMOLOGATION_ADMIN_USER}:${HOMOLOGATION_ADMIN_PASSWORD}@postgres:5432/${HOMOLOGATION_DATABASE}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+
+  api:
+    build:
+      context: ../../..
+      dockerfile: Dockerfile
+    image: jungle-homologation-app:${HOMOLOGATION_ID}
+    environment:
+      <<: *application-environment
+      PORT: "3000"
+    ports:
+      - "127.0.0.1::3000"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bun",
+          "-e",
+          "if(!(await fetch('http://127.0.0.1:3000/health/ready')).ok)process.exit(1)",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  worker:
+    build:
+      context: ../../..
+      dockerfile: Dockerfile
+    image: jungle-homologation-app:${HOMOLOGATION_ID}
+    command: ["bun", "src/worker.ts"]
+    environment:
+      <<: *application-environment
+      METRICS_HOST: 0.0.0.0
+    ports:
+      - "127.0.0.1::3001"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:
+    name: ${HOMOLOGATION_PROJECT}-postgres-data
+  localstack-data:
+    name: ${HOMOLOGATION_PROJECT}-localstack-data
