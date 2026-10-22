@@ -8,7 +8,6 @@ coverage/
 *.dump
 *.sql.gz
 docs/.restart-fixture.json
-Jungle_Codex_Prompt_Mestre.md
 sqs-attributes.json
 
 # Keep only the curated audit reports and reproducible homologation harness.
